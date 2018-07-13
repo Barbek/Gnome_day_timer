@@ -7,7 +7,10 @@ Configuration for multiple timers is available under settings.
 mkdir ~/.local/share/gnome-shell/extensions/Gnome_day_timer@barbek
 cp -r . ~/.local/share/gnome-shell/extensions/Gnome_day_timer@barbek
 ```
+Restart Gnome Shell with:
+
 Alt + F2
+
 type 'r' and press enter
 
 # Note
