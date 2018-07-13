@@ -10,6 +10,6 @@ cp -r . ~/.local/share/gnome-shell/extensions/Gnome_day_timer@barbek
 Alt + F2
 type 'r' and press enter
 
-#Note
+# Note
 For Gnome Shell version 3.26.2
 tested with Fedora 27
