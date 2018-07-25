@@ -4,14 +4,15 @@ Configuration for multiple timers is available under settings.
 
 # Installation
 ```
-mkdir ~/.local/share/gnome-shell/extensions/Gnome_day_timer@barbek
-cp -r . ~/.local/share/gnome-shell/extensions/Gnome_day_timer@barbek
+cp -r Gnome_day_timer@barbek ~/.local/share/gnome-shell/extensions/
 ```
 Restart Gnome Shell with:
 
 Alt + F2
 
 type 'r' and press enter
+
+under Gnome settings > extensions enable the extension
 
 # Note
 For Gnome Shell version 3.26.2
