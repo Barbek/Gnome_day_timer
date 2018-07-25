@@ -12,6 +12,7 @@ const Tweener = imports.ui.tweener;
 const Local = imports.misc.extensionUtils.getCurrentExtension();
 const INDICATORS_KEY = "indicators";
 const FIRSTRUN_KEY = "first-run";
+const TIME_OUT = 1;
 let Settings = Local.imports.convenience.getSettings();
 
 
@@ -59,7 +60,7 @@ const GnomeDayTimerIndicator = new Lang.Class({
 
     _refresh: function() {
         this._removeTimeout();
-        this._timeout = Mainloop.timeout_add_seconds(10, Lang.bind(this, this._refresh));
+        this._timeout = Mainloop.timeout_add_seconds(TIME_OUT, Lang.bind(this, this._refresh));
         this._refreshUI();
         return true;
     },
@@ -83,11 +84,12 @@ const GnomeDayTimerIndicator = new Lang.Class({
             t.daysLeft = self._calculateDaysLeft(new Date(t.date));
             // print(t.name, t.daysLeft);
         });
+        this._removeEnded();
         this._timers.sort((t1, t2) => t1.daysLeft - t2.daysLeft);
         let txt;
         if (this._timers.length > 0) {
             let shortest = this._timers[0];
-            txt = `${shortest.daysLeft} days left until ${shortest.name}`;
+            txt = this._stringifyTimer(shortest);
         } else {
             txt = "Nothing set";
         }
@@ -98,7 +100,7 @@ const GnomeDayTimerIndicator = new Lang.Class({
 
     _updateMenu: function() {
         let self = this;
-        let strings = this._timers.map(t => `${t.daysLeft} days left until ${t.name}`);
+        let strings = this._timers.map(t => self._stringifyTimer(t));
         this.menu.removeAll();
         strings.forEach(s => {
             self.menu.addMenuItem(new PopupMenu.PopupMenuItem(s));
@@ -110,7 +112,19 @@ const GnomeDayTimerIndicator = new Lang.Class({
     _calculateDaysLeft: function(end) {
         let oneDay = 1000 * 60 * 60 * 24;
         let today = new Date();
-        return Math.ceil((end.getTime() - today.getTime()) / oneDay);
+        return Math.floor((end.getTime() - today.getTime()) / oneDay);
+    },
+
+    _calculateTimeLeft: function(end) {
+        let now = new Date();
+        let distance = end.getTime() - now.getTime();
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        var date = new Date(null);
+        date.setHours(hours, minutes, seconds);
+        var timeString = date.toLocaleTimeString();
+        return timeString;
     },
 
     _showAllTimers: function() {
@@ -120,7 +134,7 @@ const GnomeDayTimerIndicator = new Lang.Class({
             this._desktopBox.vertical = true;
             //this._desktopBox.background_color = Clutter.Color.get_static(Clutter.StaticColor.BLACK);
             Main.uiGroup.add_actor(this._desktopBox);
-            let strings = this._timers.map(t => `${t.daysLeft} days left until ${t.name}`);
+            let strings = this._timers.map(t => self._stringifyTimer(t));
             strings.forEach(s => {
                 let text = new St.Label({ text: s });
                 text.opacity = 255;
@@ -142,6 +156,22 @@ const GnomeDayTimerIndicator = new Lang.Class({
             Main.uiGroup.remove_actor(this._desktopBox);
             this._desktopBox = null;
         }
+    },
+
+    _stringifyTimer: function(timer) {
+        if (timer.daysLeft > 1) {
+            return `${timer.daysLeft} days left until ${timer.name}`;
+        } else if (timer.daysLeft > 0) {
+            return `${timer.daysLeft} day left until ${timer.name}`;
+        }
+        let timeLeft = this._calculateTimeLeft(new Date(timer.date));
+        return `${timeLeft} left until ${timer.name}`;
+    },
+
+    _removeEnded: function() {
+        this._timers = this._timers.filter(t => {
+            return t.daysLeft >= 0;
+        });
     },
 
     stop: function() {

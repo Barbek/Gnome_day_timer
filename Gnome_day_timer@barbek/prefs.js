@@ -59,8 +59,45 @@ const App = new Lang.Class({
 
         this._dataWidget.connect('day-selected', this._onDateChanged.bind(this));
 
+        let timeBox = new Gtk.Box({
+            "margin-top": 10,
+            orientation: Gtk.Orientation.HORIZONTAL,
+            hexpand: true
+        });
+
+        this._timeHours = new Gtk.SpinButton({
+            hexpand: true,
+            value: 0
+        });
+        this._timeHours.set_range(0, 23);
+        this._timeHours.set_increments(1, 1);
+        this._timeHours.connect('value-changed', this._onDateChanged.bind(this));
+
+        this._timeMinutes = new Gtk.SpinButton({
+            hexpand: true,
+            value: 0
+        });
+        this._timeMinutes.set_range(0, 59);
+        this._timeMinutes.set_increments(1, 1);
+        this._timeMinutes.connect('value-changed', this._onDateChanged.bind(this));
+
+        this._timeSeconds = new Gtk.SpinButton({
+            hexpand: true,
+            value: 0
+        });
+        this._timeSeconds.set_range(0, 59);
+        this._timeSeconds.set_increments(1, 1);
+        this._timeSeconds.connect('value-changed', this._onDateChanged.bind(this));
+
+        timeBox.add(this._timeHours);
+        timeBox.add(new Gtk.Label({ label: ":" }));
+        timeBox.add(this._timeMinutes);
+        timeBox.add(new Gtk.Label({ label: ":" }));
+        timeBox.add(this._timeSeconds);
+
         configLayout.add(this._inputField);
         configLayout.add(this._dataWidget);
+        configLayout.add(timeBox);
 
         this.add(configLayout);
 
@@ -138,6 +175,9 @@ const App = new Lang.Class({
             this._dataWidget.day = _d.getDate();
             this._dataWidget.month = _d.getMonth();
             this._dataWidget.year = _d.getFullYear();
+            this._timeHours.value = _d.getHours();
+            this._timeMinutes.value = _d.getMinutes();
+            this._timeSeconds.value = _d.getSeconds();
         }
     },
 
@@ -145,10 +185,16 @@ const App = new Lang.Class({
         //lock this until selection completed
         if (!this._selectionActive) {
             let _date = new Date();
-            _date.setFullYear(this._dataWidget.year);
-            _date.setMonth(this._dataWidget.month);
-            _date.setDate(this._dataWidget.day);
-            _date.setHours(0, 0, 0);
+            _date.setFullYear(
+                this._dataWidget.year,
+                this._dataWidget.month,
+                this._dataWidget.day
+            );
+            _date.setHours(
+                this._timeHours.value,
+                this._timeMinutes.value,
+                this._timeSeconds.value
+            );
             let [isSelected, , iter] = this._selection.get_selected();
             if (isSelected) {
                 let _conf = this._store.getConfig(iter);
