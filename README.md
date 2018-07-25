@@ -4,7 +4,7 @@ Configuration for multiple timers is available under settings.
 
 # Installation
 ```
-cp -r Gnome_day_timer@barbek ~/.local/share/gnome-shell/extensions/
+make
 ```
 Restart Gnome Shell with:
 
