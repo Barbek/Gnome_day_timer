@@ -15,7 +15,6 @@ const FIRSTRUN_KEY = "first-run";
 const TIME_OUT = 1;
 let Settings = Local.imports.convenience.getSettings();
 
-
 const GnomeDayTimerIndicator = new Lang.Class({
     Name: 'GnomeDayTimerIndicator',
     Extends: PanelMenu.Button,
@@ -30,15 +29,18 @@ const GnomeDayTimerIndicator = new Lang.Class({
         });
         this._box.add(this.buttonText);
         this._box.add(PopupMenu.arrowIcon(St.Side.BOTTOM));
-        this.actor.add_child(this._box);
         this._initLayout();
     },
 
     _initLayout: function() {
-        //show all
-        this._popupItemShowAll = new PopupMenu.PopupMenuItem(_('Show All'));
-        this.menu.addMenuItem(this._popupItemShowAll);
-        this._popupItemShowAll.connect('activate', this._showAllTimers.bind(this));
+        //hover stuff
+        this.actor.add_child(this._box);
+        this.actor.connect("enter-event", (_widget) => {
+            this._showAllTimers();
+        });
+        this.actor.connect("leave-event", (_widget) => {
+            this._hideTimers();
+        });
         //separator
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         //settings
@@ -96,6 +98,15 @@ const GnomeDayTimerIndicator = new Lang.Class({
         this.buttonText.set_text(txt);
         let [, width] = this.buttonText.get_preferred_width(this.buttonText.get_height());
         this._box.set_width(width + 20);
+        if (this._desktopBox) {
+            let strings = this._timers.map(t => self._stringifyTimer(t));
+            this._desktopBox.remove_all_children();
+            strings.forEach(s => {
+                let text = new St.Label({ text: s });
+                text.opacity = 255;
+                self._desktopBox.add(text);
+            });
+        }
     },
 
     _updateMenu: function() {
@@ -142,13 +153,8 @@ const GnomeDayTimerIndicator = new Lang.Class({
             });
         }
         let monitor = Main.layoutManager.primaryMonitor;
-        this._desktopBox.set_position(monitor.x + monitor.width / 2, monitor.y + monitor.height / 2);
-        Tweener.addTween(this._desktopBox, {
-            opacity: 0,
-            time: 7,
-            transition: 'easeOutQuad',
-            onComplete: self._hideTimers
-        });
+        this._desktopBox.set_position(monitor.x + monitor.width / 2, monitor.y + Main.panel.actor.height);
+        Tweener.addTween(this._desktopBox, {});
     },
 
     _hideTimers: function() {
@@ -160,12 +166,12 @@ const GnomeDayTimerIndicator = new Lang.Class({
 
     _stringifyTimer: function(timer) {
         if (timer.daysLeft > 1) {
-            return `${timer.daysLeft} days left until ${timer.name}`;
+            return _(`${timer.daysLeft} days left until ${timer.name}`);
         } else if (timer.daysLeft > 0) {
-            return `${timer.daysLeft} day left until ${timer.name}`;
+            return _(`${timer.daysLeft} day left until ${timer.name}`);
         }
         let timeLeft = this._calculateTimeLeft(new Date(timer.date));
-        return `${timeLeft} left until ${timer.name}`;
+        return _(`${timeLeft} left until ${timer.name}`);
     },
 
     _removeEnded: function() {
