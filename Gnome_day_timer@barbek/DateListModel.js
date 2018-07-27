@@ -128,11 +128,25 @@ const DateListModel = new GObject.Class({
         let configs = [];
 
         while (res) {
-            configs.push(this.get_value(iter, this.Columns.CONFIG));
+            let val = this.get_value(iter, this.Columns.CONFIG);
+            configs.push(val);
             res = this.iter_next(iter);
         }
 
+        configs = this._removeOld(configs);
+
         this._settings.set_strv(INDICATORS_KEY, configs);
+    },
+
+    _removeOld: function(configs) {
+        let now = new Date();
+        return configs
+            .map(c => JSON.parse(c))
+            .filter(c => {
+                let cDate = new Date(c.date);
+                return cDate.getTime() > now.getTime();
+            })
+            .map(c => JSON.stringify(c));
     },
 
     _onRowChanged: function(self, path, iter) {
