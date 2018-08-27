@@ -166,9 +166,9 @@ const GnomeDayTimerIndicator = new Lang.Class({
 
     _stringifyTimer: function(timer) {
         if (timer.daysLeft > 1) {
-            return _(`${timer.daysLeft} days left until ${timer.name}`);
+            return _(`${timer.daysLeft + 1} days left until ${timer.name}`);
         } else if (timer.daysLeft > 0) {
-            return _(`${timer.daysLeft} day left until ${timer.name}`);
+            return _(`${timer.daysLeft + 1} day left until ${timer.name}`);
         }
         let timeLeft = this._calculateTimeLeft(new Date(timer.date));
         return _(`${timeLeft} left until ${timer.name}`);
