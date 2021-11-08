@@ -27,22 +27,29 @@ const App = new Lang.Class({
         /* sidebar (left) */
 
         let sidebar = new Gtk.Box({
-            margin: 10,
+            "margin-top": 10,
+            "margin-bottom": 10,
+            "margin-start": 10,
+            "margin-end": 10,
             orientation: Gtk.Orientation.VERTICAL,
             width_request: 240
         });
 
-        sidebar.add(this._getTreeView());
-        sidebar.add(this._getToolbar());
+        sidebar.append(this._getTreeView());
+        sidebar.append(this._getToolbar());
 
-        this.add(sidebar);
+        this.append(sidebar);
 
         /* config (right) */
 
         let configLayout = new Gtk.Box({
-            margin: 10,
+            "margin-top": 10,
+            "margin-bottom": 10,
+            "margin-start": 10,
+            "margin-end": 10,
             orientation: Gtk.Orientation.VERTICAL,
-            expand: true
+            hexpand: true,
+            vexpand: true
         });
 
         this._inputField = new Gtk.Entry({
@@ -89,17 +96,17 @@ const App = new Lang.Class({
         this._timeSeconds.set_increments(1, 1);
         this._timeSeconds.connect('value-changed', this._onDateChanged.bind(this));
 
-        timeBox.add(this._timeHours);
-        timeBox.add(new Gtk.Label({ label: ":" }));
-        timeBox.add(this._timeMinutes);
-        timeBox.add(new Gtk.Label({ label: ":" }));
-        timeBox.add(this._timeSeconds);
+        timeBox.append(this._timeHours);
+        timeBox.append(new Gtk.Label({ label: ":" }));
+        timeBox.append(this._timeMinutes);
+        timeBox.append(new Gtk.Label({ label: ":" }));
+        timeBox.append(this._timeSeconds);
 
-        configLayout.add(this._inputField);
-        configLayout.add(this._dataWidget);
-        configLayout.add(timeBox);
+        configLayout.append(this._inputField);
+        configLayout.append(this._dataWidget);
+        configLayout.append(timeBox);
 
-        this.add(configLayout);
+        this.append(configLayout);
 
         this._selection = this._treeView.get_selection();
         this._selection.connect('changed', this._onSelectionChanged.bind(this));
@@ -124,23 +131,23 @@ const App = new Lang.Class({
     },
 
     _getToolbar: function() {
-        let toolbar = this._toolbar = new Gtk.Toolbar({
-            icon_size: 1
+        let toolbar = this._toolbar = new Gtk.Box({
+            //icon_size: 1
         });
 
-        toolbar.get_style_context().add_class(Gtk.STYLE_CLASS_INLINE_TOOLBAR);
+        //toolbar.get_style_context().add_class(Gtk.STYLE_CLASS_INLINE_TOOLBAR);
 
         /* new widget button with menu */
-        let newButton = new Gtk.ToolButton({ icon_name: "list-add-symbolic" });
+        let newButton = new Gtk.Button({ icon_name: "list-add-symbolic" });
         newButton.connect('clicked', this._addClicked.bind(this));
-        toolbar.add(newButton);
+        toolbar.append(newButton);
 
         /* delete button */
         let delButton = this._delButton =
-            new Gtk.ToolButton({ icon_name: "list-remove-symbolic" });
+            new Gtk.Button({ icon_name: "list-remove-symbolic" });
         delButton.connect('clicked', this._delClicked.bind(this));
 
-        toolbar.add(delButton);
+        toolbar.append(delButton);
 
         return toolbar;
     },
@@ -216,6 +223,6 @@ const App = new Lang.Class({
 
 function buildPrefsWidget() {
     let widget = new App();
-    widget.show_all();
+    widget.show();
     return widget;
 }

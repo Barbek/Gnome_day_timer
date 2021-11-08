@@ -7,9 +7,9 @@ const PopupMenu = imports.ui.popupMenu;
 const Mainloop = imports.mainloop;
 const Gtk = imports.gi.Gtk;
 const Clutter = imports.gi.Clutter;
-const Tweener = imports.ui.tweener;
+const ExtensionUtils = imports.misc.extensionUtils;
 
-const Local = imports.misc.extensionUtils.getCurrentExtension();
+const Local = ExtensionUtils.getCurrentExtension();
 const INDICATORS_KEY = "indicators";
 const FIRSTRUN_KEY = "first-run";
 const TIME_OUT = 1;
@@ -47,14 +47,14 @@ const GnomeDayTimerIndicator = new Lang.Class({
         this._popupItemSettings = new PopupMenu.PopupMenuItem(_('Settings'));
         this.menu.addMenuItem(this._popupItemSettings);
         this._popupItemSettings.connect('activate', () => {
-            let _appSys = Shell.AppSystem.get_default();
-            let _gsmPrefs = _appSys.lookup_app('gnome-shell-extension-prefs.desktop');
-            if (_gsmPrefs.get_state() === _gsmPrefs.SHELL_APP_STATE_RUNNING) {
+            if (typeof ExtensionUtils.openPrefs === 'function') {
+                ExtensionUtils.openPrefs();
+            } else if (_gsmPrefs.get_state() === _gsmPrefs.SHELL_APP_STATE_RUNNING) {
                 _gsmPrefs.activate();
             } else {
                 let info = _gsmPrefs.get_app_info();
                 let timestamp = global.display.get_current_time_roundtrip();
-                info.launch_uris([Local.metadata.uuid], global.create_app_launch_context(timestamp, -1));
+                info.launch_uris([metadata.uuid], global.create_app_launch_context(timestamp, -1));
             }
         });
         this._refresh();
@@ -154,7 +154,6 @@ const GnomeDayTimerIndicator = new Lang.Class({
         }
         let monitor = Main.layoutManager.primaryMonitor;
         this._desktopBox.set_position(monitor.x + monitor.width / 2, monitor.y + Main.panel.actor.height);
-        Tweener.addTween(this._desktopBox, {});
     },
 
     _hideTimers: function() {
