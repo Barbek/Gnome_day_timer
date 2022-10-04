@@ -205,5 +205,4 @@ function enable() {
 
 function disable() {
     gtMenu.stop();
-    gtMenu.destroy();
 }
