@@ -2,6 +2,6 @@
     "name": "Gnome Day Timer",
     "description": "A timer with configurable dates.",
     "uuid": "Gnome_day_timer@barbek",
-    "shell-version": ["40", "41"],
+    "shell-version": ["40", "42", "43"],
     "settings-schema": "org.gnome.shell.extensions.gnome-day-timer"
 }

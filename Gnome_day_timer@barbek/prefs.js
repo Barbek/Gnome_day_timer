@@ -1,10 +1,28 @@
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
 
-let extension = imports.misc.extensionUtils.getCurrentExtension();
-let convenience = extension.imports.convenience;
+/**
+ * @typedef ExtensionMeta
+ * @type {object}
+ * @property {object} metadata - the metadata.json file, parsed as JSON
+ * @property {string} uuid - the extension UUID
+ * @property {number} type - the extension type; `1` for system, `2` for user
+ * @property {Gio.File} dir - the extension directory
+ * @property {string} path - the extension directory path
+ * @property {string} error - an error message or an empty string if no error
+ * @property {boolean} hasPrefs - whether the extension has a preferences dialog
+ * @property {boolean} hasUpdate - whether the extension has a pending update
+ * @property {boolean} canChange - whether the extension can be enabled/disabled
+ * @property {string[]} sessionModes - a list of supported session modes
+ */
 
-const DateListModel = extension.imports.DateListModel.DateListModel;
+/**
+ * @type {ExtensionMeta}
+ */
+const ExtensionUtils = imports.misc.extensionUtils;
+const Local = ExtensionUtils.getCurrentExtension();
+const convenience = Local.imports.convenience;
+const DateListModelLib = Local.imports.DateListModel;
 
 let Schema;
 
@@ -22,7 +40,7 @@ const App = new Lang.Class({
             orientation: Gtk.Orientation.HORIZONTAL
         });
 
-        this._store = new DateListModel();
+        this._store = new DateListModelLib.DateListModel();
 
         /* sidebar (left) */
 
@@ -63,6 +81,8 @@ const App = new Lang.Class({
             hexpand: false,
             vexpand: true
         });
+
+        this._dataWidget.set_show_week_numbers(true);
 
         this._dataWidget.connect('day-selected', this._onDateChanged.bind(this));
 

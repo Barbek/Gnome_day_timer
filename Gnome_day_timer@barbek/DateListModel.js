@@ -9,7 +9,7 @@ const Convenience = Local.imports.convenience;
 
 const INDICATORS_KEY = "indicators";
 
-const ConfigModel = new Lang.Class({
+var ConfigModel = new Lang.Class({
     Name: "ConfigModel",
 
     _init: function(attributes) {
@@ -36,7 +36,7 @@ const ConfigModel = new Lang.Class({
 
 Signals.addSignalMethods(ConfigModel.prototype);
 
-const DateListModel = new GObject.Class({
+var DateListModel = new GObject.Class({
     Name: "GnomeDayTimer.DateListModel",
     GTypeName: "DateListModel",
     Extends: Gtk.ListStore,

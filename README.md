@@ -6,11 +6,12 @@ Configuration for multiple timers is available under settings.
 ```
 make
 ```
+
 Restart Gnome Shell with:
 
 Alt + F2
 
-type 'r' and press enter
+type 'r' and press enter (not working with Wayland)
 
 under Gnome settings > extensions enable the extension
 
